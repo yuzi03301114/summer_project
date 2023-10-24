@@ -1,0 +1,66 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .ph-input {
+    margin-bottom: 20px;
+  }
+  
+  .ph-input label, .ph-input input, .ph-input button {
+    margin: 5px;
+    padding: 8px;
+    font-size: 16px;
+  }
+  
+  .ph-input input {
+    width: 100px;
+  }
+  
+  .ph-input button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .ph-input button:hover {
+    background-color: #45a049;
+  }
+  
+  .ph-display {
+    margin-top: 20px;
+  }
+  
+  #ph-value {
+    font-size: 36px;
+    font-weight: bold;
+    color: #4CAF50;
+  }
+  .hidden {
+    display: none;
+  }
+  /* 其他样式规则 */
+
+.hidden {
+  display: none;
+}
+
+#history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#history-table th,
+#history-table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+}

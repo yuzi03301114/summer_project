@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Amend PH-Value</title>
+    <!-- <link rel="stylesheet" href="styles.css" /> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Amend PH-Value, ORP-Value, & Cycle time + RealTime ORP Value</h1>
+
+      <div>
+        <div class="ph-input">
+          <label for="ph-input">PH-Value:</label>
+          <input
+            type="number"
+            id="number1"
+            step="0.1"
+            placeholder="lower value"
+          />
+          <input
+            type="number"
+            id="number2"
+            step="0.1"
+            placeholder="upper value"
+          />
+          <button onclick="sendValue()">Update</button>
+          <p id="phdata">pH data here...</p>
+        </div>
+        <div class="do-input">
+          <label for="do-input">DO-Value:</label>
+          <input
+            type="number"
+            id="number3"
+            step="0.1"
+            placeholder="lower value"
+          />
+          <input
+            type="number"
+            id="number4"
+            step="0.1"
+            placeholder="upper value"
+          />
+          <button onclick="sendDOValue()">Update</button>
+          <p id="dodata">DO data here...</p>
+        </div>
+        <p id="orpdata">ORP data here...</p>
+      </div>
+
+      <div class="WP-input">
+        <div>
+          <label for="wp-input">Water Pump:</label>
+          <input
+            type="number"
+            id="number5"
+            step="0.1"
+            placeholder="On for how long (in seconds): "
+          />
+          <input
+            type="number"
+            id="number6"
+            step="0.1"
+            placeholder="Off for how long (in seconds): "
+          />
+        </div>
+
+        <div>
+          <label for="wp-input">Air Pump:</label>
+          <input
+            type="number"
+            id="number7"
+            step="0.1"
+            placeholder="On for how long (in seconds): "
+          />
+          <input
+            type="number"
+            id="number8"
+            step="0.1"
+            placeholder="Off for how long (in seconds): "
+          />
+        </div>
+
+        <div>
+          <label for="wp-input">Discharge:</label>
+          <input
+            type="number"
+            id="number9"
+            step="0.1"
+            placeholder="Discharge for how long (in seconds): "
+          />
+        </div>
+
+        <button onclick="sendWPValue()">Update</button>
+        <p id="data">Status here</p>
+      </div>
+    </div>
+
+    <script>
+      const socket = io();
+
+      socket.on("connect", () => {
+        console.log("Connected to server");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Disconnected from server");
+      });
+
+      socket.on("data", (data) => {
+        console.log(data, ' suoy');
+        const value = data.value;
+        if (value == "00") {
+          document.getElementById("data").textContent = `Water pump on`;
+        } else if (value == "01") {
+          document.getElementById("data").textContent = `Water pump off`;
+        } else if (value == "02") {
+          document.getElementById("data").textContent = `Air pump on`;
+        } else if (value == "03") {
+          document.getElementById("data").textContent = `Air pump off`;
+        } else if (value == "04") {
+          document.getElementById("data").textContent = `Discharge on`;
+        } else if (value == "05") {
+          document.getElementById("data").textContent = `Discharge off`;
+        } else if (value.substr(0, 3) == "do:") {
+          document.getElementById(
+            "dodata"
+          ).textContent = `Current DO value: ${value.slice(3)}`;
+        } else if (value.substr(0, 3) == "ph:") {
+          document.getElementById(
+            "phdata"
+          ).textContent = `Current pH value: ${value.slice(3)}`;
+        } else if (value.substr(0, 3) == "ORP") {
+          document.getElementById(
+            "orpdata"
+          ).textContent = `Current ORP value: ${value.slice(3)}`;
+        }
+        // document.getElementById("data").textContent = `${value}`;
+      });
+
+      function sendValue() {
+        var number1 = document.getElementById("number1").value;
+        var number2 = document.getElementById("number2").value;
+
+        var xhr = new XMLHttpRequest();
+
+        // Set request method and URL
+        xhr.open("POST", "/send_values", true);
+
+        // set request header
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // listen request status changes
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              console.log("Data has sent to Arduino");
+            } else {
+              console.log("Send failed");
+            }
+          }
+        };
+
+        //Send data to python as JSON
+        var data = JSON.stringify({ number1: number1, number2: number2 });
+        xhr.send(data);
+      }
+
+      function sendDOValue() {
+        var number3 = document.getElementById("number3").value;
+        var number4 = document.getElementById("number4").value;
+
+        var xhr = new XMLHttpRequest();
+
+        // Set request method and URL
+        xhr.open("POST", "/send_DOvalues", true);
+
+        // set request header
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // listen request status changes
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              console.log("Data has sent to Arduino");
+            } else {
+              console.log("Send failed");
+            }
+          }
+        };
+
+        // Send data to python as JSON
+        var data = JSON.stringify({ number3: number3, number4: number4 });
+        xhr.send(data);
+      }
+      function sendWPValue() {
+        var number5 = document.getElementById("number5").value;
+        var number6 = document.getElementById("number6").value;
+
+        var number7 = document.getElementById("number7").value;
+        var number8 = document.getElementById("number8").value;
+
+        var number9 = document.getElementById("number9").value;
+
+        var xhr = new XMLHttpRequest();
+
+        // Set request method and URL
+        xhr.open("POST", "/send_WPvalues", true);
+
+        // set request header
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // listen request status changes
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              console.log("Data has sent to Arduino");
+            } else {
+              console.log("Send failed");
+            }
+          }
+        };
+
+        // Send data to python as JSON
+        var data = JSON.stringify({
+          number5: number5,
+          number6: number6,
+          number7: number7,
+          number8: number8,
+          number9: number9,
+        });
+        xhr.send(data);
+      }
+    </script>
+  </body>
+</html>
